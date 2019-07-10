@@ -6,8 +6,7 @@ from  base.baseExcel import BaseExcel
 import operationConfig
 import os
 class BaseCode():
-    def __str__:
-        return
+
     def __init__(self):
         GetLog = Log('basecode')
         self.getlog = GetLog.log()
@@ -17,6 +16,9 @@ class BaseCode():
         self.baseexcel=BaseExcel(excel_dir)
         self.dict_key_value = eval(LOCALCONFIG.get_config_value('EXCEL','excel_case_name'))
         self.getlog.info('案例key值读取成功为：{0}'.format(self.dict_key_value))
+
+    # def __str__(self):
+    #     return self.get_rowcase_data.__doc__#用于返回一个对象的描述信息
     def get_rowcase_data(self,sheetname,rowNumber=None):
         '''
         sheetname必填，如果填写错误日志会报错，rowNumber,默认不填时读取全表案例数据，指定某行只会读取某行数据，超出行数会有日志报错
@@ -50,7 +52,8 @@ if __name__ == '__main__':
     basecode = BaseCode()
 
     print(basecode.get_rowcase_data('TestCase'))
-    print(basecode.get_rowcase_data.__doc__)
+    print(basecode.get_rowcase_data('TestCase',2))
+
 
 
 

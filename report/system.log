@@ -421,3 +421,36 @@
 2019-07-10 15:14:29,696-baseExcel-INFO-打开sheet页--TestCase成功
 2019-07-10 15:14:29,696-baseExcel-INFO-获取TestCase第2行值为[2, '用户登录', '', '{"name": "hanzhichao","age": 18}', '/post', 'post', 200, ''];
 2019-07-10 15:14:29,697-basecode-INFO-TestCase页全部案例读取成功，为：[{'测试编号': 1, '测试用例': '获取用户手机号', 'FrontSQL前置数据命令': '', '请求体': '{ "origin": "223.72.242.14, 223.72.242.14"}', '接口路径': '/get', '请求方法': 'get', 'HttpCode': 200, '结果校验': ''}, {'测试编号': 2, '测试用例': '用户登录', 'FrontSQL前置数据命令': '', '请求体': '{"name": "hanzhichao","age": 18}', '接口路径': '/post', '请求方法': 'post', 'HttpCode': 200, '结果校验': ''}]
+2019-07-10 15:45:15,261-baseExcel-INFO-打开Excel成功
+2019-07-10 15:45:15,263-basecode-INFO-案例key值读取成功为：['测试编号', '测试用例', 'FrontSQL前置数据命令', '请求体', '接口路径', '请求方法', 'HttpCode', '结果校验']
+2019-07-10 15:45:15,264-baseExcel-INFO-打开sheet页--TestCase成功
+2019-07-10 15:45:15,264-baseExcel-INFO-获取TestCase总计3行;
+2019-07-10 15:45:15,264-baseExcel-INFO-打开sheet页--TestCase成功
+2019-07-10 15:45:15,264-baseExcel-INFO-获取TestCase第1行值为[1, '获取用户手机号', '', '{ "origin": "223.72.242.14, 223.72.242.14"}', '/get', 'get', 200, ''];
+2019-07-10 15:45:15,273-basecode-INFO-TestCase页全部案例读取成功，为：[{'测试编号': 1, '测试用例': '获取用户手机号', 'FrontSQL前置数据命令': '', '请求体': '{ "origin": "223.72.242.14, 223.72.242.14"}', '接口路径': '/get', '请求方法': 'get', 'HttpCode': 200, '结果校验': ''}]
+2019-07-10 15:45:15,274-baseExcel-INFO-打开sheet页--TestCase成功
+2019-07-10 15:45:15,274-baseExcel-INFO-获取TestCase第2行值为[2, '用户登录', '', '{"name": "hanzhichao","age": 18}', '/post', 'post', 200, ''];
+2019-07-10 15:45:15,275-basecode-INFO-TestCase页全部案例读取成功，为：[{'测试编号': 1, '测试用例': '获取用户手机号', 'FrontSQL前置数据命令': '', '请求体': '{ "origin": "223.72.242.14, 223.72.242.14"}', '接口路径': '/get', '请求方法': 'get', 'HttpCode': 200, '结果校验': ''}, {'测试编号': 2, '测试用例': '用户登录', 'FrontSQL前置数据命令': '', '请求体': '{"name": "hanzhichao","age": 18}', '接口路径': '/post', '请求方法': 'post', 'HttpCode': 200, '结果校验': ''}]
+2019-07-10 15:46:14,585-baseExcel-INFO-打开Excel成功
+2019-07-10 15:46:14,585-basecode-INFO-案例key值读取成功为：['测试编号', '测试用例', 'FrontSQL前置数据命令', '请求体', '接口路径', '请求方法', 'HttpCode', '结果校验']
+2019-07-10 15:46:14,585-baseExcel-INFO-打开sheet页--TestCase成功
+2019-07-10 15:46:14,586-baseExcel-INFO-获取TestCase总计3行;
+2019-07-10 15:46:14,586-baseExcel-INFO-打开sheet页--TestCase成功
+2019-07-10 15:46:14,586-baseExcel-INFO-获取TestCase第1行值为[1, '获取用户手机号', '', '{ "origin": "223.72.242.14, 223.72.242.14"}', '/get', 'get', 200, ''];
+2019-07-10 15:46:14,586-basecode-INFO-TestCase页全部案例读取成功，为：[{'测试编号': 1, '测试用例': '获取用户手机号', 'FrontSQL前置数据命令': '', '请求体': '{ "origin": "223.72.242.14, 223.72.242.14"}', '接口路径': '/get', '请求方法': 'get', 'HttpCode': 200, '结果校验': ''}]
+2019-07-10 15:46:14,586-baseExcel-INFO-打开sheet页--TestCase成功
+2019-07-10 15:46:14,587-baseExcel-INFO-获取TestCase第2行值为[2, '用户登录', '', '{"name": "hanzhichao","age": 18}', '/post', 'post', 200, ''];
+2019-07-10 15:46:14,587-basecode-INFO-TestCase页全部案例读取成功，为：[{'测试编号': 1, '测试用例': '获取用户手机号', 'FrontSQL前置数据命令': '', '请求体': '{ "origin": "223.72.242.14, 223.72.242.14"}', '接口路径': '/get', '请求方法': 'get', 'HttpCode': 200, '结果校验': ''}, {'测试编号': 2, '测试用例': '用户登录', 'FrontSQL前置数据命令': '', '请求体': '{"name": "hanzhichao","age": 18}', '接口路径': '/post', '请求方法': 'post', 'HttpCode': 200, '结果校验': ''}]
+2019-07-10 15:52:06,872-baseExcel-INFO-打开Excel成功
+2019-07-10 15:52:06,872-basecode-INFO-案例key值读取成功为：['测试编号', '测试用例', 'FrontSQL前置数据命令', '请求体', '接口路径', '请求方法', 'HttpCode', '结果校验']
+2019-07-10 15:52:06,873-baseExcel-INFO-打开sheet页--TestCase成功
+2019-07-10 15:52:06,873-baseExcel-INFO-获取TestCase总计3行;
+2019-07-10 15:52:06,873-baseExcel-INFO-打开sheet页--TestCase成功
+2019-07-10 15:52:06,873-baseExcel-INFO-获取TestCase第1行值为[1, '获取用户手机号', '', '{ "origin": "223.72.242.14, 223.72.242.14"}', '/get', 'get', 200, ''];
+2019-07-10 15:52:06,873-basecode-INFO-TestCase页全部案例读取成功，为：[{'测试编号': 1, '测试用例': '获取用户手机号', 'FrontSQL前置数据命令': '', '请求体': '{ "origin": "223.72.242.14, 223.72.242.14"}', '接口路径': '/get', '请求方法': 'get', 'HttpCode': 200, '结果校验': ''}]
+2019-07-10 15:52:06,873-baseExcel-INFO-打开sheet页--TestCase成功
+2019-07-10 15:52:06,873-baseExcel-INFO-获取TestCase第2行值为[2, '用户登录', '', '{"name": "hanzhichao","age": 18}', '/post', 'post', 200, ''];
+2019-07-10 15:52:06,873-basecode-INFO-TestCase页全部案例读取成功，为：[{'测试编号': 1, '测试用例': '获取用户手机号', 'FrontSQL前置数据命令': '', '请求体': '{ "origin": "223.72.242.14, 223.72.242.14"}', '接口路径': '/get', '请求方法': 'get', 'HttpCode': 200, '结果校验': ''}, {'测试编号': 2, '测试用例': '用户登录', 'FrontSQL前置数据命令': '', '请求体': '{"name": "hanzhichao","age": 18}', '接口路径': '/post', '请求方法': 'post', 'HttpCode': 200, '结果校验': ''}]
+2019-07-10 15:52:06,874-baseExcel-INFO-打开sheet页--TestCase成功
+2019-07-10 15:52:06,874-baseExcel-INFO-获取TestCase第2行值为[2, '用户登录', '', '{"name": "hanzhichao","age": 18}', '/post', 'post', 200, ''];
+2019-07-10 15:52:06,874-basecode-INFO-第2行案例读取成功，为：[{'测试编号': 2, '测试用例': '用户登录', 'FrontSQL前置数据命令': '', '请求体': '{"name": "hanzhichao","age": 18}', '接口路径': '/post', '请求方法': 'post', 'HttpCode': 200, '结果校验': ''}]
