@@ -1,0 +1,16 @@
+operationConfig  
+
+1.本页主要为获得config.ini的值，有sections区分不同的模块,下有items以键值的方式呈现
+[ENV]#sections
+env_name = kuaidi#items
+用configparser.ConfigParser()类方法获得
+可以get_config_value获得值和set_config_value修改值
+2.定义环境变量地址RROJECT_DIR
+configfile 说明
+ConfigParser implementing interpolation.get_config_value 说明
+
+        读取config.ini的值
+        :param section:config中的模块名
+        :param option:config中的元素键
+        :return:
+        

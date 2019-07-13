@@ -40,7 +40,6 @@ class BaseHttp():
             if response.status_code == 200:
                 self.getlog.info('post请求成功')
             else:
-                response.status_code is not 200
                 self.getlog.info('post请求返回失败')
             return response
 

@@ -1,5 +1,5 @@
 '''
-通过baseExcel模块和operationConfig获取excel表案例数据，已字典方式呈现
+通过baseExcel模块和operationConfig获取excel表案例数据，已字典方式呈现，最终结果为列表
 '''
 from base.log import Log
 from  base.baseExcel import BaseExcel

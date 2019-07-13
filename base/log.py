@@ -27,7 +27,7 @@ class Log():
         self.log1.setLevel(logging.DEBUG)
         logaddress = os.path.join(Config.get_config_value('REPORT', 'path'), 'system.log')
         '''
-        读取config.ini中的report-path
+        读取config.ini中的report-path，通过Run.py文件写入path，每天更新一个路径
         '''
         filelog = logging.FileHandler(logaddress)
         screenlog = logging.StreamHandler()

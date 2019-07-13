@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Test Report</title>
+    <link href="assets/style.css" rel="stylesheet" type="text/css"/></head>
+  <body onLoad="init()">
+    <script>/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+
+function toArray(iter) {
+    if (iter === null) {
+        return null;
+    }
+    return Array.prototype.slice.call(iter);
+}
+
+function find(selector, elem) {
+    if (!elem) {
+        elem = document;
+    }
+    return elem.querySelector(selector);
+}
+
+function find_all(selector, elem) {
+    if (!elem) {
+        elem = document;
+    }
+    return toArray(elem.querySelectorAll(selector));
+}
+
+function sort_column(elem) {
+    toggle_sort_states(elem);
+    var colIndex = toArray(elem.parentNode.childNodes).indexOf(elem);
+    var key;
+    if (elem.classList.contains('numeric')) {
+        key = key_num;
+    } else if (elem.classList.contains('result')) {
+        key = key_result;
+    } else {
+        key = key_alpha;
+    }
+    sort_table(elem, key(colIndex));
+}
+
+function show_all_extras() {
+    find_all('.col-result').forEach(show_extras);
+}
+
+function hide_all_extras() {
+    find_all('.col-result').forEach(hide_extras);
+}
+
+function show_extras(colresult_elem) {
+    var extras = colresult_elem.parentNode.nextElementSibling;
+    var expandcollapse = colresult_elem.firstElementChild;
+    extras.classList.remove("collapsed");
+    expandcollapse.classList.remove("expander");
+    expandcollapse.classList.add("collapser");
+}
+
+function hide_extras(colresult_elem) {
+    var extras = colresult_elem.parentNode.nextElementSibling;
+    var expandcollapse = colresult_elem.firstElementChild;
+    extras.classList.add("collapsed");
+    expandcollapse.classList.remove("collapser");
+    expandcollapse.classList.add("expander");
+}
+
+function show_filters() {
+    var filter_items = document.getElementsByClassName('filter');
+    for (var i = 0; i < filter_items.length; i++)
+        filter_items[i].hidden = false;
+}
+
+function add_collapse() {
+    // Add links for show/hide all
+    var resulttable = find('table#results-table');
+    var showhideall = document.createElement("p");
+    showhideall.innerHTML = '<a href="javascript:show_all_extras()">Show all details</a> / ' +
+                            '<a href="javascript:hide_all_extras()">Hide all details</a>';
+    resulttable.parentElement.insertBefore(showhideall, resulttable);
+
+    // Add show/hide link to each result
+    find_all('.col-result').forEach(function(elem) {
+        var collapsed = get_query_parameter('collapsed') || 'Passed';
+        var extras = elem.parentNode.nextElementSibling;
+        var expandcollapse = document.createElement("span");
+        if (collapsed.includes(elem.innerHTML)) {
+            extras.classList.add("collapsed");
+            expandcollapse.classList.add("expander");
+        } else {
+            expandcollapse.classList.add("collapser");
+        }
+        elem.appendChild(expandcollapse);
+
+        elem.addEventListener("click", function(event) {
+            if (event.currentTarget.parentNode.nextElementSibling.classList.contains("collapsed")) {
+                show_extras(event.currentTarget);
+            } else {
+                hide_extras(event.currentTarget);
+            }
+        });
+    })
+}
+
+function get_query_parameter(name) {
+    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+function init () {
+    reset_sort_headers();
+
+    add_collapse();
+
+    show_filters();
+
+    toggle_sort_states(find('.initial-sort'));
+
+    find_all('.sortable').forEach(function(elem) {
+        elem.addEventListener("click",
+                              function(event) {
+                                  sort_column(elem);
+                              }, false)
+    });
+
+};
+
+function sort_table(clicked, key_func) {
+    var rows = find_all('.results-table-row');
+    var reversed = !clicked.classList.contains('asc');
+    var sorted_rows = sort(rows, key_func, reversed);
+    /* Whole table is removed here because browsers acts much slower
+     * when appending existing elements.
+     */
+    var thead = document.getElementById("results-table-head");
+    document.getElementById('results-table').remove();
+    var parent = document.createElement("table");
+    parent.id = "results-table";
+    parent.appendChild(thead);
+    sorted_rows.forEach(function(elem) {
+        parent.appendChild(elem);
+    });
+    document.getElementsByTagName("BODY")[0].appendChild(parent);
+}
+
+function sort(items, key_func, reversed) {
+    var sort_array = items.map(function(item, i) {
+        return [key_func(item), i];
+    });
+    var multiplier = reversed ? -1 : 1;
+
+    sort_array.sort(function(a, b) {
+        var key_a = a[0];
+        var key_b = b[0];
+        return multiplier * (key_a >= key_b ? 1 : -1);
+    });
+
+    return sort_array.map(function(item) {
+        var index = item[1];
+        return items[index];
+    });
+}
+
+function key_alpha(col_index) {
+    return function(elem) {
+        return elem.childNodes[1].childNodes[col_index].firstChild.data.toLowerCase();
+    };
+}
+
+function key_num(col_index) {
+    return function(elem) {
+        return parseFloat(elem.childNodes[1].childNodes[col_index].firstChild.data);
+    };
+}
+
+function key_result(col_index) {
+    return function(elem) {
+        var strings = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed',
+                       'Skipped', 'Passed'];
+        return strings.indexOf(elem.childNodes[1].childNodes[col_index].firstChild.data);
+    };
+}
+
+function reset_sort_headers() {
+    find_all('.sort-icon').forEach(function(elem) {
+        elem.parentNode.removeChild(elem);
+    });
+    find_all('.sortable').forEach(function(elem) {
+        var icon = document.createElement("div");
+        icon.className = "sort-icon";
+        icon.textContent = "vvv";
+        elem.insertBefore(icon, elem.firstChild);
+        elem.classList.remove("desc", "active");
+        elem.classList.add("asc", "inactive");
+    });
+}
+
+function toggle_sort_states(elem) {
+    //if active, toggle between asc and desc
+    if (elem.classList.contains('active')) {
+        elem.classList.toggle('asc');
+        elem.classList.toggle('desc');
+    }
+
+    //if inactive, reset all other functions and add ascending active
+    if (elem.classList.contains('inactive')) {
+        reset_sort_headers();
+        elem.classList.remove('inactive');
+        elem.classList.add('active');
+    }
+}
+
+function is_all_rows_hidden(value) {
+  return value.hidden == false;
+}
+
+function filter_table(elem) {
+    var outcome_att = "data-test-result";
+    var outcome = elem.getAttribute(outcome_att);
+    class_outcome = outcome + " results-table-row";
+    var outcome_rows = document.getElementsByClassName(class_outcome);
+
+    for(var i = 0; i < outcome_rows.length; i++){
+        outcome_rows[i].hidden = !elem.checked;
+    }
+
+    var rows = find_all('.results-table-row').filter(is_all_rows_hidden);
+    var all_rows_hidden = rows.length == 0 ? true : false;
+    var not_found_message = document.getElementById("not-found-message");
+    not_found_message.hidden = !all_rows_hidden;
+}
+</script>
+    <h1>report155126.html</h1>
+    <p>Report generated on 13-Jul-2019 at 15:51:29 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v1.21.1</p>
+    <h2>Environment</h2>
+    <table id="environment">
+      <tr>
+        <td>Packages</td>
+        <td>{&apos;pytest&apos;: &apos;5.0.1&apos;, &apos;py&apos;: &apos;1.8.0&apos;, &apos;pluggy&apos;: &apos;0.12.0&apos;}</td></tr>
+      <tr>
+        <td>Platform</td>
+        <td>Windows-10-10.0.17134-SP0</td></tr>
+      <tr>
+        <td>Plugins</td>
+        <td>{&apos;html&apos;: &apos;1.21.1&apos;, &apos;metadata&apos;: &apos;1.8.0&apos;}</td></tr>
+      <tr>
+        <td>Python</td>
+        <td>3.6.3</td></tr></table>
+    <h2>Summary</h2>
+    <p>3 tests ran in 1.65 seconds. </p>
+    <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="passed">1 passed</span>, <input checked="true" class="filter" data-test-result="skipped" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="skipped">0 skipped</span>, <input checked="true" class="filter" data-test-result="failed" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="failed">2 failed</span>, <input checked="true" class="filter" data-test-result="error" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="error">0 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filter_table(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>
+    <h2>Results</h2>
+    <table id="results-table">
+      <thead id="results-table-head">
+        <tr>
+          <th class="sortable result initial-sort" col="result">Result</th>
+          <th class="sortable" col="name">Test</th>
+          <th class="sortable numeric" col="duration">Duration</th>
+          <th>Links</th></tr>
+        <tr hidden="true" id="not-found-message">
+          <th colspan="4">No results found. Try to check the filters</th></tr></thead>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">RunCode/test_Run.py::test_allcase[case_data0]</td>
+          <td class="col-duration">0.58</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">case_data = {&#x27;FrontSQL前置数据命令&#x27;: &#x27;&#x27;, &#x27;HttpCode&#x27;: 200, &#x27;接口路径&#x27;: &#x27;/get&#x27;, &#x27;测试用例&#x27;: &#x27;获取用户手机号&#x27;, ...}<br/><br/>    @pytest.mark.parametrize(&#x27;case_data&#x27;,case_data)<br/>    def test_allcase(case_data):<br/>        getlog.info(&#x27;-----------{0}案例执行开始----------------------------&#x27;.format(case_data[&#x27;测试用例&#x27;]))<br/>        if case_data[&#x27;请求方法&#x27;] == &#x27;post&#x27;:<br/>            res = basehttp.post(case_data[&#x27;接口路径&#x27;],case_data[&#x27;请求体&#x27;])<br/>            getlog.info(&#x27;post请求的response和response.content返回码为：{0} \n {1}&#x27;.format(res,res.content))<br/>            load_res=json.loads(res.content)#将返回的response.content转为字典<br/>            getlog.info(&#x27;post请求的返回的response.content转为字典后为：{0} &#x27;.format(load_res))<br/>            res_code =load_res[&#x27;code&#x27;]#读取字典的code<br/>            getlog.info(&#x27;post请求的response返回码为：{0}&#x27;.format(res_code))<br/>        elif case_data[&#x27;请求方法&#x27;] == &#x27;get&#x27;:<br/>            res = basehttp.get(case_data[&#x27;接口路径&#x27;], case_data[&#x27;请求体&#x27;])<br/>            getlog.info(&#x27;get请求的response和response.content返回码为：{0} \n {1}&#x27;.format(res,res.content))<br/>            load_res=json.loads(res.content)#将返回的response.content转为字典<br/>            getlog.info(&#x27;get请求的返回的response.content转为字典后为：{0} &#x27;.format(load_res))<br/>            res_code =load_res[&#x27;code&#x27;]#读取字典的code<br/>            getlog.info(&#x27;get请求的response返回码为：{0}&#x27;.format(res_code))<br/>        else:<br/>            res = basehttp.post_with_json(case_data[&#x27;接口路径&#x27;], case_data[&#x27;请求体&#x27;])<br/>            getlog.info(&#x27;post_with_json请求的response和response.content返回码为：{0} \n {1}&#x27;.format(res,res.content))<br/>            load_res=json.loads(res.content)#将返回的response.content转为字典<br/>            getlog.info(&#x27;post_with_json请求的返回的response.content转为字典后为：{0} &#x27;.format(load_res))<br/>            res_code =load_res[&#x27;code&#x27;]#读取字典的code<br/>            getlog.info(&#x27;post_with_json请求的response返回码为：{0}&#x27;.format(res_code))<br/>&gt;       assert res_code == case_data[&#x27;HttpCode&#x27;]<br/><span class="error">E       assert 400 == 200</span><br/><br/>RunCode\test_Run.py:49: AssertionError<br/>----------------------------- Captured stderr call -----------------------------<br/>2019-07-13 15:51:28,640-test_Run-INFO------------获取用户手机号案例执行开始----------------------------
+2019-07-13 15:51:28,641-basehttp-INFO-最终拼接地址为：http://api.apiopen.top/get
+2019-07-13 15:51:29,218-basehttp-INFO-get请求成功，内容为：b&#x27;{&quot;code&quot;:400,&quot;message&quot;:&quot;404 Not Found&quot;,&quot;result&quot;:&quot;https://api.apiopen.top/get&quot;}&#x27;
+2019-07-13 15:51:29,219-test_Run-INFO-get请求的response和response.content返回码为：&lt;Response [200]&gt; 
+ b&#x27;{&quot;code&quot;:400,&quot;message&quot;:&quot;404 Not Found&quot;,&quot;result&quot;:&quot;https://api.apiopen.top/get&quot;}&#x27;
+2019-07-13 15:51:29,220-test_Run-INFO-get请求的返回的response.content转为字典后为：{&#x27;code&#x27;: 400, &#x27;message&#x27;: &#x27;404 Not Found&#x27;, &#x27;result&#x27;: &#x27;https://api.apiopen.top/get&#x27;} 
+2019-07-13 15:51:29,221-test_Run-INFO-get请求的response返回码为：400
+------------------------------ Captured log call -------------------------------<br/>INFO     test_Run:test_Run.py:27 -----------获取用户手机号案例执行开始----------------------------
+INFO     basehttp:baseHttp.py:25 最终拼接地址为：http://api.apiopen.top/get
+INFO     basehttp:baseHttp.py:28 get请求成功，内容为：b&#x27;{&quot;code&quot;:400,&quot;message&quot;:&quot;404 Not Found&quot;,&quot;result&quot;:&quot;https://api.apiopen.top/get&quot;}&#x27;
+INFO     test_Run:test_Run.py:37 get请求的response和response.content返回码为：&lt;Response [200]&gt; 
+                                  b&#x27;{&quot;code&quot;:400,&quot;message&quot;:&quot;404 Not Found&quot;,&quot;result&quot;:&quot;https://api.apiopen.top/get&quot;}&#x27;
+INFO     test_Run:test_Run.py:39 get请求的返回的response.content转为字典后为：{&#x27;code&#x27;: 400, &#x27;message&#x27;: &#x27;404 Not Found&#x27;, &#x27;result&#x27;: &#x27;https://api.apiopen.top/get&#x27;} 
+INFO     test_Run:test_Run.py:41 get请求的response返回码为：400</div></td></tr></tbody>
+      <tbody class="failed results-table-row">
+        <tr>
+          <td class="col-result">Failed</td>
+          <td class="col-name">RunCode/test_Run.py::test_allcase[case_data1]</td>
+          <td class="col-duration">0.25</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">case_data = {&#x27;FrontSQL前置数据命令&#x27;: &#x27;&#x27;, &#x27;HttpCode&#x27;: 200, &#x27;接口路径&#x27;: &#x27;/post&#x27;, &#x27;测试用例&#x27;: &#x27;用户登录&#x27;, ...}<br/><br/>    @pytest.mark.parametrize(&#x27;case_data&#x27;,case_data)<br/>    def test_allcase(case_data):<br/>        getlog.info(&#x27;-----------{0}案例执行开始----------------------------&#x27;.format(case_data[&#x27;测试用例&#x27;]))<br/>        if case_data[&#x27;请求方法&#x27;] == &#x27;post&#x27;:<br/>            res = basehttp.post(case_data[&#x27;接口路径&#x27;],case_data[&#x27;请求体&#x27;])<br/>            getlog.info(&#x27;post请求的response和response.content返回码为：{0} \n {1}&#x27;.format(res,res.content))<br/>            load_res=json.loads(res.content)#将返回的response.content转为字典<br/>            getlog.info(&#x27;post请求的返回的response.content转为字典后为：{0} &#x27;.format(load_res))<br/>            res_code =load_res[&#x27;code&#x27;]#读取字典的code<br/>            getlog.info(&#x27;post请求的response返回码为：{0}&#x27;.format(res_code))<br/>        elif case_data[&#x27;请求方法&#x27;] == &#x27;get&#x27;:<br/>            res = basehttp.get(case_data[&#x27;接口路径&#x27;], case_data[&#x27;请求体&#x27;])<br/>            getlog.info(&#x27;get请求的response和response.content返回码为：{0} \n {1}&#x27;.format(res,res.content))<br/>            load_res=json.loads(res.content)#将返回的response.content转为字典<br/>            getlog.info(&#x27;get请求的返回的response.content转为字典后为：{0} &#x27;.format(load_res))<br/>            res_code =load_res[&#x27;code&#x27;]#读取字典的code<br/>            getlog.info(&#x27;get请求的response返回码为：{0}&#x27;.format(res_code))<br/>        else:<br/>            res = basehttp.post_with_json(case_data[&#x27;接口路径&#x27;], case_data[&#x27;请求体&#x27;])<br/>            getlog.info(&#x27;post_with_json请求的response和response.content返回码为：{0} \n {1}&#x27;.format(res,res.content))<br/>            load_res=json.loads(res.content)#将返回的response.content转为字典<br/>            getlog.info(&#x27;post_with_json请求的返回的response.content转为字典后为：{0} &#x27;.format(load_res))<br/>            res_code =load_res[&#x27;code&#x27;]#读取字典的code<br/>            getlog.info(&#x27;post_with_json请求的response返回码为：{0}&#x27;.format(res_code))<br/>&gt;       assert res_code == case_data[&#x27;HttpCode&#x27;]<br/><span class="error">E       assert 400 == 200</span><br/><br/>RunCode\test_Run.py:49: AssertionError<br/>----------------------------- Captured stderr call -----------------------------<br/>2019-07-13 15:51:29,315-test_Run-INFO------------用户登录案例执行开始----------------------------
+2019-07-13 15:51:29,316-basehttp-INFO-最终拼接地址为：http://api.apiopen.top/post
+2019-07-13 15:51:29,567-basehttp-INFO-post请求成功，内容为：{&quot;code&quot;:400,&quot;message&quot;:&quot;404 Not Found&quot;,&quot;result&quot;:&quot;https://api.apiopen.top/post&quot;}
+2019-07-13 15:51:29,568-basehttp-INFO-post请求成功
+2019-07-13 15:51:29,568-test_Run-INFO-post请求的response和response.content返回码为：&lt;Response [200]&gt; 
+ b&#x27;{&quot;code&quot;:400,&quot;message&quot;:&quot;404 Not Found&quot;,&quot;result&quot;:&quot;https://api.apiopen.top/post&quot;}&#x27;
+2019-07-13 15:51:29,568-test_Run-INFO-post请求的返回的response.content转为字典后为：{&#x27;code&#x27;: 400, &#x27;message&#x27;: &#x27;404 Not Found&#x27;, &#x27;result&#x27;: &#x27;https://api.apiopen.top/post&#x27;} 
+2019-07-13 15:51:29,568-test_Run-INFO-post请求的response返回码为：400
+------------------------------ Captured log call -------------------------------<br/>INFO     test_Run:test_Run.py:27 -----------用户登录案例执行开始----------------------------
+INFO     basehttp:baseHttp.py:36 最终拼接地址为：http://api.apiopen.top/post
+INFO     basehttp:baseHttp.py:39 post请求成功，内容为：{&quot;code&quot;:400,&quot;message&quot;:&quot;404 Not Found&quot;,&quot;result&quot;:&quot;https://api.apiopen.top/post&quot;}
+INFO     basehttp:baseHttp.py:41 post请求成功
+INFO     test_Run:test_Run.py:30 post请求的response和response.content返回码为：&lt;Response [200]&gt; 
+                                  b&#x27;{&quot;code&quot;:400,&quot;message&quot;:&quot;404 Not Found&quot;,&quot;result&quot;:&quot;https://api.apiopen.top/post&quot;}&#x27;
+INFO     test_Run:test_Run.py:32 post请求的返回的response.content转为字典后为：{&#x27;code&#x27;: 400, &#x27;message&#x27;: &#x27;404 Not Found&#x27;, &#x27;result&#x27;: &#x27;https://api.apiopen.top/post&#x27;} 
+INFO     test_Run:test_Run.py:34 post请求的response返回码为：400</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">RunCode/test_Run.py::test_allcase[case_data2]</td>
+          <td class="col-duration">0.26</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log">----------------------------- Captured stderr call -----------------------------<br/>2019-07-13 15:51:29,581-test_Run-INFO------------测试案例执行开始----------------------------
+2019-07-13 15:51:29,834-basehttp-INFO-post_with_json请求成功，内容为：{&quot;code&quot;:200,&quot;message&quot;:&quot;成功!&quot;,&quot;result&quot;:&quot;抱歉，暂无查询记录&quot;}
+2019-07-13 15:51:29,835-test_Run-INFO-post_with_json请求的response和response.content返回码为：&lt;Response [200]&gt; 
+ b&#x27;{&quot;code&quot;:200,&quot;message&quot;:&quot;\xe6\x88\x90\xe5\x8a\x9f!&quot;,&quot;result&quot;:&quot;\xe6\x8a\xb1\xe6\xad\x89\xef\xbc\x8c\xe6\x9a\x82\xe6\x97\xa0\xe6\x9f\xa5\xe8\xaf\xa2\xe8\xae\xb0\xe5\xbd\x95&quot;}&#x27;
+2019-07-13 15:51:29,836-test_Run-INFO-post_with_json请求的返回的response.content转为字典后为：{&#x27;code&#x27;: 200, &#x27;message&#x27;: &#x27;成功!&#x27;, &#x27;result&#x27;: &#x27;抱歉，暂无查询记录&#x27;} 
+2019-07-13 15:51:29,836-test_Run-INFO-post_with_json请求的response返回码为：200
+2019-07-13 15:51:29,837-test_Run-INFO-------------------测试案例执行结束---------------------
+------------------------------ Captured log call -------------------------------<br/>INFO     test_Run:test_Run.py:27 -----------测试案例执行开始----------------------------
+INFO     basehttp:baseHttp.py:54 post_with_json请求成功，内容为：{&quot;code&quot;:200,&quot;message&quot;:&quot;成功!&quot;,&quot;result&quot;:&quot;抱歉，暂无查询记录&quot;}
+INFO     test_Run:test_Run.py:44 post_with_json请求的response和response.content返回码为：&lt;Response [200]&gt; 
+                                  b&#x27;{&quot;code&quot;:200,&quot;message&quot;:&quot;\xe6\x88\x90\xe5\x8a\x9f!&quot;,&quot;result&quot;:&quot;\xe6\x8a\xb1\xe6\xad\x89\xef\xbc\x8c\xe6\x9a\x82\xe6\x97\xa0\xe6\x9f\xa5\xe8\xaf\xa2\xe8\xae\xb0\xe5\xbd\x95&quot;}&#x27;
+INFO     test_Run:test_Run.py:46 post_with_json请求的返回的response.content转为字典后为：{&#x27;code&#x27;: 200, &#x27;message&#x27;: &#x27;成功!&#x27;, &#x27;result&#x27;: &#x27;抱歉，暂无查询记录&#x27;} 
+INFO     test_Run:test_Run.py:48 post_with_json请求的response返回码为：200
+INFO     test_Run:test_Run.py:50 ------------------测试案例执行结束---------------------</div></td></tr></tbody></table></body></html>
