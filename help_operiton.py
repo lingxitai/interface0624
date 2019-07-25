@@ -1,3 +1,7 @@
+'''
+输入模块名称后可以自动的生成说明书，尚未完成。
+'''
+
 import os
 import operationConfig
 method_list=dir(operationConfig.CONFIG)
